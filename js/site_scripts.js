@@ -61,7 +61,7 @@ function birthday(arg){
 		if (dateObj.getDate()<dateNow.getDate()){
 		dateObj.setFullYear(dateNow.getFullYear()+1);
 		dateObj = (dateObj-dateNow)/(24*3600*1000);
-		returng(textDay(dateObj));
+		return(textDay(dateObj));
 		} else
 		if (dateObj.getDate()==dateNow.getDate()){
 		return("Сегодня день рождения!!!");
@@ -92,12 +92,12 @@ function textDay(allday){
 function like(slide_id){
 	const request = new XMLHttpRequest();
 	const url = "_like.php";
-	const params = "slide_id="+slide_id+"&event=like";
+	const params = "slide_id="+slide_id.value+"&event=like";
 	request.open("POST", url, true);
 	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	request.addEventListener("readystatechange", () => {
 		if(request.readyState === 4 && request.status === 200) {       
-		$("label[for='like-"+slide_id+"'] b").text(request.responseText);
+		$("label[for='like-"+slide_id.value+"'] b").text(request.responseText);
 		console.log(request.responseText);
 		}
 	});
@@ -117,4 +117,28 @@ function dislike(slide_id){
 		}
 	};
 	request.send(params);
+}
+
+
+function testlike(param){
+	var slide_id = {slide_id:param.control.value};
+	const request = new XMLHttpRequest();
+	const url = "_like.php";
+	const params = "slide_id="+slide_id+"&event=dislike";
+	//request.responseType =	"json";
+	request.open("POST", url);
+	//request.setRequestHeader("Accept", "application/json");
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.onload = function() {
+		if(request.readyState === 4 && request.status === 200) {       
+		//$("label[for='like-"+slide_id+"'] b").text(request.responseText);
+		let obj = JSON.parse(request.responseText);
+		param.control.checked = (obj.slider_like==1);
+		param.querySelector('b').innerHTML = obj.like_count;
+		console.log(obj);
+		}
+	};
+	request.send("slide_id="+param.control.value);
+	//console.log(param.control.value);
+	//(param.control.checked = false);
 }
